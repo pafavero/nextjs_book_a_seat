@@ -1,7 +1,9 @@
--- DROP TABLE book_a_seat.seat_objs;
+
+CREATE EXTENSION postgis;
+create schema book_a_seat;
+
 
 -- DROP TABLE book_a_seat.table_objs;
-
 CREATE TABLE book_a_seat.table_objs (
 	id serial4 NOT NULL,
 	"name" varchar NOT NULL,
@@ -13,7 +15,6 @@ CREATE TABLE book_a_seat.table_objs (
 
 
 -- DROP TABLE book_a_seat.seat_objs;
-
 CREATE TABLE book_a_seat.seat_objs (
 	id serial4 NOT NULL,
 	"name" varchar NOT NULL,
@@ -23,7 +24,6 @@ CREATE TABLE book_a_seat.seat_objs (
 
 
 -- DROP TABLE book_a_seat.reservation;
-
 CREATE TABLE book_a_seat.reservation (
 	id serial4 NOT NULL,
 	seat_id int4 NOT NULL,
@@ -36,7 +36,6 @@ CREATE TABLE book_a_seat.reservation (
 
 
 -- Sample of data
-
 INSERT INTO book_a_seat.table_objs ("name",x,y,width,height) VALUES
 	 ('table 2',49.0,17.0,166.0,38.0),
 	 ('table 1',599.0,87.0,46.0,161.0);
@@ -47,4 +46,3 @@ INSERT INTO book_a_seat.seat_objs ("name",x,y) VALUES
 	 ('chair 4',168.0,55.0),
 	 ('chair 1',599.0,219.0),
 	 ('chair 2',599.0,111.0);
-
