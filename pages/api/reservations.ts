@@ -1,20 +1,31 @@
+import { QueryResult } from 'pg';
+import { NextApiRequest, NextApiResponse } from 'next/types';
 import {conn, cors, runMiddleware} from '../../lib/db';
 
-export default async function handler(req, res) {
-  // console.log(req.method);
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface SeatRslt{
+  seat_id: string,
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);
   if (req.method === 'OPTIONS') {
     res.status(200)
   } else if (req.method === 'GET') {
-    const selSeat = req.query.selSeat;
-    // console.log('selSeat', selSeat);
-    let rslt = null;
+    const selSeat: string | string[] = req.query.selSeat;
+    let rslt: QueryResult<User> | null = null;
     if(selSeat){
-      rslt = await conn.query(`select r, id, r.seat_id as seatId, r.username, to_char(r.start_date, 'YYYY-MM-DD HH24:MI:SS') as startDate, to_char(r.end_date, 'YYYY-MM-DD HH24:MI:SS') as endDate
+      rslt = await conn.query<User>(`select r, id, r.seat_id as seatId, r.username, to_char(r.start_date, 'YYYY-MM-DD HH24:MI:SS') as startDate, to_char(r.end_date, 'YYYY-MM-DD HH24:MI:SS') as endDate
                                   from book_a_seat.reservation r
                                   where r.seat_id = ${selSeat}
                                   order by r.start_date`);
     }
+    //console.log('rslt', rslt)
     res.status(200).json({
       rslt: rslt?.rows
     });
@@ -24,7 +35,7 @@ export default async function handler(req, res) {
       const interval = req.body.interval;
 
       // check if the user has in the same period already booked
-      const rslt = await conn.query(`SELECT distinct (seat_id) from book_a_seat.reservation 
+      const rslt: QueryResult<SeatRslt> = await conn.query(`SELECT distinct (seat_id) from book_a_seat.reservation 
         where username =  '${req.body.user}' and ((start_date between '${interval[0]}' and '${interval[1]}')
           or (end_date between '${interval[0]}' and '${interval[1]}')
           or (start_date < '${interval[0]}' and end_date > '${interval[1]}'))`)
@@ -32,8 +43,8 @@ export default async function handler(req, res) {
       // where username =  '${req.body.user}' and ((start_date between '${interval[0]}' and '${interval[1]}')
       //   or (end_date between '${interval[0]}' and '${interval[1]}')
       //   or (start_date < '${interval[0]}' and end_date > '${interval[1]}'))`)
-      const rows = rslt?.rows
-      console.log(rows)
+      const rows: Array<SeatRslt> = rslt?.rows
+      // console.log(rows)
       if (rows.length > 0){
         // console.log('error.........', rows.map((item)=>item.seat_id))
         return res.status(200).json({
@@ -49,7 +60,7 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error(error);
     }
-    console.log('everything ok')
+    // console.log('everything ok')
     res.status(200).json({
       successfull: successfull
     });

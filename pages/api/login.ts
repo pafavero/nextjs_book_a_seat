@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import {cors, runMiddleware} from '../../lib/db';
+import { NextApiRequest, NextApiResponse } from 'next/types';
 
 const fakeLogin = [
   {user: "admin0", pwd:"admin0", role:"admin"},
@@ -8,7 +9,7 @@ const fakeLogin = [
   {user: "user3", pwd:"user3", role:"user"},
 ]
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);
   // console.log('login', req.method);
   // const foundItem = fakeLogin.find(item => {
